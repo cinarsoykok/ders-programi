@@ -1,0 +1,30 @@
+#week-container {
+  display: grid;
+  min-height: 50vh;
+  max-width: 1600px;
+  grid-template-columns: repeat(auto-fit, minmax(214px, 1fr));
+  padding: 16px;
+  margin: 0 auto;
+  column-gap: 10px;
+}
+
+.day-header {
+  border: 1px solid gray;
+  font-family: 'Courier New', Courier, monospace;
+  padding: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.lesson-item {
+  list-style-type: none;
+  border-left: 4px solid aqua;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  margin-bottom: 16px;
+  padding: 8px;
+}
+
+.lessons-container {
+  padding: 8px;
+}
