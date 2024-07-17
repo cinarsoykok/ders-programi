@@ -8,19 +8,25 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <button id="day-button">Day</button>
+    <button id="week-button">Week</button>
+    <button id="month-button">Month</button>
     <div id="week-container"></div>
     <button id="pre-button">Previous</button>
     <button id="next-button">Next</button>
+    <button id="menu-toggle-button">Menu</button>
     <br> <br>
-    <label for="lesson-name">Lesson Name:</label>
-    <input type="text" id="lessonName"> <br> <br>
+    <div class="add-data">
+      <label for="lesson-name">Lesson Name:</label>
+      <input type="text" id="lessonName"> <br> <br>
 
-    <label for="date">Date/Time Start: </label>
-    <input type="datetime-local" id="lessonDate">
-    <br> <br> <br>
-    <label for="time-end">Duration: </label>
-    <input type="number" name="time" id="lessonDuration"> <br> <br>
-    <button id="addLessonButton">Add</button>
-    <script type="module" src="/main.js"></script>
+      <label for="date">Date/Time Start: </label>
+      <input type="datetime-local" id="lessonDate">
+      <br> <br> <br>
+      <label for="time-end">Duration: </label>
+      <input type="number" name="time" id="lessonDuration"> <br> <br>
+      <button id="addLessonButton">Add</button>
+    </div>
+    <script type="module" src="/main.js"></script> 
   </body>
 </html>

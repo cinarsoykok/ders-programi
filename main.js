@@ -8,10 +8,19 @@ const addLessonButton = document.querySelector("#addLessonButton");
 const lessonNameInput = document.querySelector("#lessonName");
 const lessonDateInput = document.querySelector("#lessonDate");
 const lessonDurationInput = document.querySelector("#lessonDuration");
+const addData = document.querySelector(".add-data");
+const menuToggleButton = document.querySelector("#menu-toggle-button");
+const dayButton = document.querySelector("#day-button");
+const weekButton = document.querySelector("#week-button");
+const monthButton = document.querySelector("#month-button");
 
-
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 let weekNumberState = moment().isoWeek();
+let monthNumberState = moment().month();
+let dayNumberState = moment().date();
+let viewSwitchState = "weekView";
+console.log(dayNumberState)
+
 console.log(weekNumberState)
 
 const lessonState = [];
@@ -49,14 +58,58 @@ const fifthLesson = {
 
 lessonState.push(firstLesson, secondLesson, thirdLesson,fourthLesson, fifthLesson);
 
+dayButton.addEventListener("click", () => {
+    days = [moment().format("dddd")];
+    console.log(moment().format("dddd"))
+    renderView(dayNumberState);
+    viewSwitchState = "dayView";
+    console.log(viewSwitchState)
+
+})
+
+weekButton.addEventListener("click", () => {
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    renderView(weekNumberState);
+    console.log("Week button clicked");
+    viewSwitchState = "weekView";
+    console.log(viewSwitchState)
+})
+
+monthButton.addEventListener("click", () => {
+    
+    let monthDayStart = moment().startOf("month");
+    let monthDayEnd = moment().daysInMonth();
+    days = [];
+    for(let i=0; i<monthDayEnd; i++){
+        days.push(monthDayStart.add(i, "days").format("dddd"));
+    }
+    console.log(monthDayStart);
+    renderView(weekNumberState);
+    viewSwitchState = "monthView";
+    console.log(viewSwitchState)
+})
+
 nextButton.addEventListener("click", () => {
-    weekNumberState = weekNumberState + 1; 
-    renderWeek(weekNumberState)
+    console.log(viewSwitchState);
+    if(viewSwitchState === "monthView"){
+        monthNumberState = monthNumberState + 1;
+        renderView(monthNumberState);
+    }
+    if(viewSwitchState === "weekView") {
+        weekNumberState = weekNumberState + 1;
+        renderView(weekNumberState);
+    }
+    if(viewSwitchState === "dayView") {
+       dayNumberState = dayNumberState + 1;
+       renderView(dayNumberState);  
+    }
+
 });
 
  preButton.addEventListener("click", () => {
-    weekNumberState = weekNumberState - 1; 
-    renderWeek(weekNumberState)
+    weekNumberState = weekNumberState - 1;
+    dayNumberState = dayNumberState - 1; 
+    renderView(weekNumberState)
  });  
 
  addLessonButton.addEventListener("click", () => {
@@ -74,11 +127,23 @@ nextButton.addEventListener("click", () => {
      console.log(newLesson)
      weekNumberState = lessonDateObject.isoWeek();
      console.log(weekNumberState)
-     renderWeek(weekNumberState);
+    renderView(weekNumberState);
      lessonDateInput.value = '';
      lessonNameInput.value = '';
      lessonDurationInput.value = '';
  });
+
+ menuToggleButton.addEventListener("click", () => {
+    const addDataDisplay = addData.style.display;
+    if(addDataDisplay === "none"){
+        addData.style.display = "block";
+    } else {
+        addData.style.display = "none";
+    }
+
+ });
+
+
 
  function createLesson(lessonName, lessonDate, lessonDuration){
      const lesson = {
@@ -91,7 +156,9 @@ nextButton.addEventListener("click", () => {
 
  }
 
-function renderWeek(weekNumber){
+ 
+
+function renderView(weekNumber){
 
     weekContainer.innerHTML = '';
 
@@ -104,7 +171,7 @@ function renderWeek(weekNumber){
     ul.className = "lessons-container";
     
     const currentWeekStart = moment().isoWeek(weekNumber).startOf("isoWeek");
-    console.log(currentWeekStart)
+   
     div.textContent = `${day} ${currentWeekStart.add(index, "days").format("DD")}`;
     p.appendChild(div);
 
@@ -137,6 +204,9 @@ function renderWeek(weekNumber){
   });
 
 }
+
+
+
 function isInCurrentWeek(lessonDate) {
   return lessonDate.isoWeek() ===  weekNumberState;
 }
@@ -144,6 +214,8 @@ function isInCurrentWeek(lessonDate) {
 function isInCurrentDay(lessonDate, index) {
     return lessonDate.day() === index + 1;
 }
+renderView(weekNumberState);
 
-renderWeek(weekNumberState);
-
+document.addEventListener('DOMContentLoaded', function() {
+    addData.style.display = "none";
+});
