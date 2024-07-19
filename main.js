@@ -19,9 +19,6 @@ let weekNumberState = moment().isoWeek();
 let monthNumberState = moment().month();
 let dayNumberState = moment().date();
 let viewSwitchState = "weekView";
-console.log(dayNumberState)
-
-console.log(weekNumberState)
 
 const lessonState = [];
 
@@ -60,19 +57,12 @@ lessonState.push(firstLesson, secondLesson, thirdLesson,fourthLesson, fifthLesso
 
 dayButton.addEventListener("click", () => {
     days = [moment().format("dddd")];
-    console.log(moment().format("dddd"))
-    renderView(dayNumberState);
-    viewSwitchState = "dayView";
-    console.log(viewSwitchState)
-
+    renderView(dayNumberState, viewSwitchState = "dayView");
 })
 
 weekButton.addEventListener("click", () => {
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    renderView(weekNumberState);
-    console.log("Week button clicked");
-    viewSwitchState = "weekView";
-    console.log(viewSwitchState)
+    renderView(weekNumberState, viewSwitchState = "weekView");
 })
 
 monthButton.addEventListener("click", () => {
@@ -84,32 +74,39 @@ monthButton.addEventListener("click", () => {
         days.push(monthDayStart.add(i, "days").format("dddd"));
     }
     console.log(monthDayStart);
-    renderView(weekNumberState);
-    viewSwitchState = "monthView";
-    console.log(viewSwitchState)
+    renderView(weekNumberState, viewSwitchState = "monthView");
 })
 
 nextButton.addEventListener("click", () => {
-    console.log(viewSwitchState);
+
     if(viewSwitchState === "monthView"){
         monthNumberState = monthNumberState + 1;
-        renderView(monthNumberState);
+        renderView(monthNumberState, viewSwitchState);
     }
     if(viewSwitchState === "weekView") {
         weekNumberState = weekNumberState + 1;
-        renderView(weekNumberState);
+        renderView(weekNumberState, viewSwitchState);
     }
     if(viewSwitchState === "dayView") {
        dayNumberState = dayNumberState + 1;
-       renderView(dayNumberState);  
+       renderView(dayNumberState, viewSwitchState);  
     }
-
+    
 });
 
  preButton.addEventListener("click", () => {
-    weekNumberState = weekNumberState - 1;
-    dayNumberState = dayNumberState - 1; 
-    renderView(weekNumberState)
+    if(viewSwitchState === "monthView"){
+        monthNumberState = monthNumberState - 1;
+        renderView(monthNumberState, viewSwitchState);
+    }
+    if(viewSwitchState === "weekView") {
+        weekNumberState = weekNumberState - 1;
+        renderView(weekNumberState, viewSwitchState);
+    }
+    if(viewSwitchState === "dayView") {
+       dayNumberState = dayNumberState - 1;
+       renderView(dayNumberState, viewSwitchState);  
+    }
  });  
 
  addLessonButton.addEventListener("click", () => {
@@ -120,14 +117,10 @@ nextButton.addEventListener("click", () => {
      const lessonDateObject = moment(new Date(lessonDate));
      const newLesson = createLesson(lessonName, lessonDateObject, lessonDuration);
 
-     console.log({lessonDate})
-     console.log({lessonDateObject})
-
      lessonState.push(newLesson);
-     console.log(newLesson)
      weekNumberState = lessonDateObject.isoWeek();
-     console.log(weekNumberState)
-    renderView(weekNumberState);
+    
+     renderView(weekNumberState, viewSwitchState);
      lessonDateInput.value = '';
      lessonNameInput.value = '';
      lessonDurationInput.value = '';
@@ -140,10 +133,7 @@ nextButton.addEventListener("click", () => {
     } else {
         addData.style.display = "none";
     }
-
  });
-
-
 
  function createLesson(lessonName, lessonDate, lessonDuration){
      const lesson = {
@@ -156,56 +146,64 @@ nextButton.addEventListener("click", () => {
 
  }
 
- 
-
-function renderView(weekNumber){
+function renderView(weekNumber, viewState){
 
     weekContainer.innerHTML = '';
 
     days.forEach((day, index) => {
-    const p = document.createElement("p");
-    p.className = "column";
-    const ul = document.createElement("ul");
-    const div = document.createElement("div");
-    div.className = "day-header";
-    ul.className = "lessons-container";
-    
-    const currentWeekStart = moment().isoWeek(weekNumber).startOf("isoWeek");
-   
-    div.textContent = `${day} ${currentWeekStart.add(index, "days").format("DD")}`;
-    p.appendChild(div);
-
-    const lessons = lessonState.filter((lesson) => {
-        if(isInCurrentWeek(lesson.date) && isInCurrentDay(lesson.date, index)) {
-            return lesson;
-        }  
-    })
-    
-    lessons.sort((a, b) => {
-        if(a.date.isBefore(b.date)){
-            return -1;
+        const p = document.createElement("p");
+        p.className = "column";
+        const ul = document.createElement("ul");
+        const div = document.createElement("div");
+        div.className = "day-header";
+        ul.className = "lessons-container";
+        
+        const currentWeekStart = moment().isoWeek(weekNumber).startOf("isoWeek");
+        const currentDayStart = moment().date(weekNumber);
+        const currentMonthStart = moment().month() + 1;
+        
+        if(viewState === "dayView") {
+            div.textContent = `${day} ${currentDayStart.add(index, "days").format("DD")}`;
+            p.appendChild(div);
+            console.log("Day view clicked")
+        
         } 
-        return 1;
-    })
+        
+        if(viewState === "weekView") {
+        
+            div.textContent = `${day} ${currentWeekStart.add(index, "days").format("DD")}`; 
+            p.appendChild(div);
+        }
+
     
-
-     lessons.forEach((lesson) => {
-          const li = document.createElement("li");
-          li.className = "lesson-item";
-          const lessonDate = moment(lesson.date);
-          li.textContent = `${lesson.name} ${lesson.date.format("HH:mm")} - ${(lessonDate.add(lesson.duration, 'minute').format("HH:mm"))}` 
-          ul.appendChild(li); 
+        const lessons = lessonState.filter((lesson) => {
+            if(isInCurrentWeek(lesson.date) && isInCurrentDay(lesson.date, index)) {
+                return lesson;
+            }  
         })
+        
+        lessons.sort((a, b) => {
+            if(a.date.isBefore(b.date)){
+                return -1;
+            } 
+            return 1;
+        })
+        
+        lessons.forEach((lesson) => {
+            const li = document.createElement("li");
+            li.className = "lesson-item";
+            const lessonDate = moment(lesson.date);
+            li.textContent = `${lesson.name} ${lesson.date.format("HH:mm")} - ${(lessonDate.add(lesson.duration, 'minute').format("HH:mm"))}` 
+            ul.appendChild(li); 
+            })
 
-        p.appendChild(ul);
+            p.appendChild(ul);
 
-    weekContainer.appendChild(p);
+        weekContainer.appendChild(p);
 
-  });
-
+    });
+    
 }
-
-
 
 function isInCurrentWeek(lessonDate) {
   return lessonDate.isoWeek() ===  weekNumberState;
@@ -214,7 +212,10 @@ function isInCurrentWeek(lessonDate) {
 function isInCurrentDay(lessonDate, index) {
     return lessonDate.day() === index + 1;
 }
-renderView(weekNumberState);
+
+
+renderView(weekNumberState, viewSwitchState);
+
 
 document.addEventListener('DOMContentLoaded', function() {
     addData.style.display = "none";
