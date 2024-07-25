@@ -18,6 +18,7 @@ let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", 
 let weekNumberState = moment().isoWeek();
 let monthNumberState = moment().month();
 let dayNumberState = moment().date();
+let selectedDayState = moment();
 let viewSwitchState = "weekView";
 
 const lessonState = [];
@@ -72,8 +73,7 @@ monthButton.addEventListener("click", () => {
     for(let i=0; i<monthDayEnd; i++){
         days.push(monthDayStart.add(i, "days").format("dddd"));
     }
-    renderView(weekNumberState, viewSwitchState);
-    viewSwitchState = "monthView";
+    renderView(weekNumberState, viewSwitchState = "monthView");
 })
 
 nextButton.addEventListener("click", () => {
@@ -86,8 +86,10 @@ nextButton.addEventListener("click", () => {
         renderView(weekNumberState, viewSwitchState);
     }
     if(viewSwitchState === "dayView") {
+       selectedDayState.add(1, "days");
        dayNumberState = dayNumberState + 1;
        renderView(dayNumberState, viewSwitchState);  
+       console.log(selectedDayState) 
     }
 
 });
@@ -102,8 +104,10 @@ nextButton.addEventListener("click", () => {
         renderView(weekNumberState, viewSwitchState);
     }
     if(viewSwitchState === "dayView") {  
+       selectedDayState.subtract(1, "days");
        dayNumberState = dayNumberState - 1;
-       renderView(dayNumberState, viewSwitchState);  
+       renderView(dayNumberState, viewSwitchState); 
+       console.log(selectedDayState) 
     }
  });  
 
@@ -151,8 +155,17 @@ nextButton.addEventListener("click", () => {
 function renderView(weekNumber, viewState){
 
     weekContainer.innerHTML = '';
+    let range = 7;
 
-    days.forEach((day, index) => {
+    if(viewState === "dayView") {
+        range = 1;
+    }
+    if(viewState === "monthView") {
+        range = 30;
+    }
+    console.log(range)
+
+    for(let index=0; index<range; index++) {
         const p = document.createElement("p");
         p.className = "column";
         const ul = document.createElement("ul");
@@ -164,7 +177,7 @@ function renderView(weekNumber, viewState){
         const currentDayStart = moment().date(weekNumber);
     
         if(viewState === "weekView") {
-            div.textContent = `${day} ${currentWeekStart.add(index, "days").format("DD")}`;
+            div.textContent = `${days[index]} ${currentWeekStart.add(index, "days").format("DD")}`;
             p.appendChild(div);
         } 
         if(viewState === "dayView") {
@@ -177,7 +190,22 @@ function renderView(weekNumber, viewState){
                 return lesson;
             }  
         })
+
+  
         
+        console.log(days)
+        console.log(currentDayStart.date())
+        if(currentDayStart.date() === selectedDayState.format("dddd")){
+            console.log("Code executed")
+            const currentDayLessons = lessonState.filter((lesson) => {
+                if(moment(selectedDayState).isSame(lesson.date, 'day')) {
+                    return true;
+                }  
+            })
+            console.log(currentDayStart)
+        } 
+        
+         
         lessons.sort((a, b) => {
             if(a.date.isBefore(b.date)){
                 return -1;
@@ -197,8 +225,7 @@ function renderView(weekNumber, viewState){
             p.appendChild(ul);
 
         weekContainer.appendChild(p);
-
-  });
+    }
 
 }
 
