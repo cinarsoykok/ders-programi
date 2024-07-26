@@ -88,7 +88,7 @@ nextButton.addEventListener("click", () => {
     if(viewSwitchState === "dayView") {
        selectedDayState.add(1, "days");
        dayNumberState = dayNumberState + 1;
-       renderView(dayNumberState, viewSwitchState);  
+       renderView(dayNumberState, viewSwitchState, selectedDayState);  
        console.log(selectedDayState) 
     }
 
@@ -180,9 +180,25 @@ function renderView(weekNumber, viewState){
             div.textContent = `${days[index]} ${currentWeekStart.add(index, "days").format("DD")}`;
             p.appendChild(div);
         } 
-        if(viewState === "dayView") {
+
+        const currentDayLessons = lessonState.filter((lesson) => {
+            if(moment(selectedDayState).isSame(lesson.date, 'day')) {
+                return true;
+            }  
+        })
+
+        if(viewState === "dayView")  {
             div.textContent = `${currentDayStart.add(index, "days").format("dddd")} ${currentDayStart.format("DD")}`;
             p.appendChild(div);
+            
+            currentDayLessons.forEach((lesson) => {
+            const li = document.createElement("li");
+                li.className = "lesson-item";
+                const lessonDate = moment(lesson.date);
+                li.textContent = `${lesson.name} ${lesson.date.format("HH:mm")} - ${(lessonDate.add(lesson.duration, 'minute').format("HH:mm"))}` 
+                ul.appendChild(li); 
+            })
+        
         }
 
         const lessons = lessonState.filter((lesson) => {
@@ -191,20 +207,6 @@ function renderView(weekNumber, viewState){
             }  
         })
 
-  
-        
-        console.log(days)
-        console.log(currentDayStart.date())
-        if(currentDayStart.date() === selectedDayState.format("dddd")){
-            console.log("Code executed")
-            const currentDayLessons = lessonState.filter((lesson) => {
-                if(moment(selectedDayState).isSame(lesson.date, 'day')) {
-                    return true;
-                }  
-            })
-            console.log(currentDayStart)
-        } 
-        
          
         lessons.sort((a, b) => {
             if(a.date.isBefore(b.date)){
@@ -220,7 +222,7 @@ function renderView(weekNumber, viewState){
             const lessonDate = moment(lesson.date);
             li.textContent = `${lesson.name} ${lesson.date.format("HH:mm")} - ${(lessonDate.add(lesson.duration, 'minute').format("HH:mm"))}` 
             ul.appendChild(li); 
-            })
+         })
 
             p.appendChild(ul);
 
